@@ -47,22 +47,41 @@ export const generatePDF = async (list: Person[], filePath: string): Promise<voi
     // Set the font to Helvetica-Bold for table headers
     doc.font('Helvetica-Bold');
 
-    // Add table headers to the PDF
-    doc.text('Name', { width: 200 });
-    doc.text('Surname', { width: 200 });
-    doc.text('Date', { width: 200 });
-    doc.moveDown();
+    // Set up the table headers
+    doc.font('Helvetica-Bold').fontSize(12);
+    doc.text('No', 50, 50);
+    doc.text('Name', 100, 50);
+    doc.text('Surname', 250, 50);
+    doc.text('Date', 400, 50);
 
-    // Set the font to Helvetica for table data
-    doc.font('Helvetica');
+    // Draw a thick horizontal line below the headers
+    doc.lineWidth(2);
+    doc.moveTo(50, 65).lineTo(500, 65).stroke();
+    doc.lineWidth(1); // Reset line width for the rest of the document
 
+    // Set up the table rows
+    doc.font('Helvetica').fontSize(10);
+    let y = 70;
     // Iterate through the list of people and add their information to the PDF table
-    list.forEach((person) => {
-      doc.text(person.name, { width: 200 });
-      doc.text(person.surname, { width: 200 });
-      doc.text(new Date(person.timestamp).toLocaleString(), { width: 200 });
-      doc.moveDown();
+    list.forEach((person, index) => {
+      const rowNumber = index + 1;
+
+      // Draw a thin horizontal line between rows
+      doc.moveTo(50, y).lineTo(500, y).stroke();
+      y += 5; // Add a 5-pixel gap
+
+      doc.text(rowNumber.toString(), 50, y);
+      doc.text(person.name, 100, y);
+      doc.text(person.surname, 250, y);
+      doc.text(new Date(person.timestamp).toLocaleString(), 380, y);
+
+      y += 20; // Increase the y position for the next row
     });
+
+    // Draw a thick horizontal line below the headers
+    doc.lineWidth(2);
+    doc.moveTo(50, y).lineTo(500, y).stroke();
+    doc.lineWidth(1); // Reset line width for the rest of the document
 
     // End the PDF document
     doc.end();
